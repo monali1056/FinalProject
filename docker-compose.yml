@@ -1,0 +1,19 @@
+version: '3.9'
+
+services:
+
+  frontend:
+    build: ./rentease-frontend
+    ports:
+      - "5173:5173"
+    depends_on:
+      - backend
+
+  backend:
+    build: ./rentease-backend-v2/backend
+    ports:
+      - "5000:5000"
+
+networks:
+  default:
+    driver: bridge
