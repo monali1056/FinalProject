@@ -1,0 +1,72 @@
+name: RentEase CI/CD Pipeline
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+
+  build-and-push:
+
+    runs-on: ubuntu-latest
+
+    steps:
+
+    # CHECKOUT CODE
+
+    - name: Checkout Repository
+      uses: actions/checkout@v4
+
+    # SETUP NODE
+
+    - name: Setup Node.js
+      uses: actions/setup-node@v4
+      with:
+        node-version: 18
+
+    # INSTALL FRONTEND DEPENDENCIES
+
+    - name: Install Frontend Dependencies
+      run: |
+        cd rentease-frontend
+        npm install
+
+    # INSTALL BACKEND DEPENDENCIES
+
+    - name: Install Backend Dependencies
+      run: |
+        cd rentease-backend-v2/backend
+        npm install
+
+    # LOGIN TO DOCKER HUB
+
+    - name: Login to Docker Hub
+      uses: docker/login-action@v3
+      with:
+        username: ${{ secrets.DOCKER_USERNAME }}
+        password: ${{ secrets.DOCKER_PASSWORD }}
+
+    # BUILD FRONTEND IMAGE
+
+    - name: Build Frontend Docker Image
+      run: |
+        docker build -t ${{ secrets.DOCKER_USERNAME }}/rentease-frontend ./rentease-frontend
+
+    # BUILD BACKEND IMAGE
+
+    - name: Build Backend Docker Image
+      run: |
+        docker build -t ${{ secrets.DOCKER_USERNAME }}/rentease-backend ./rentease-backend-v2/backend
+
+    # PUSH FRONTEND IMAGE
+
+    - name: Push Frontend Docker Image
+      run: |
+        docker push ${{ secrets.DOCKER_USERNAME }}/rentease-frontend
+
+    # PUSH BACKEND IMAGE
+
+    - name: Push Backend Docker Image
+      run: |
+        docker push ${{ secrets.DOCKER_USERNAME }}/rentease-backend
