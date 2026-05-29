@@ -1,4 +1,4 @@
-name: RentEase CI/CD Pipeline
+name: Rentease CI/CD Pipeline
 
 on:
   push:
